@@ -44,49 +44,51 @@ public class ChargeActivity extends AppCompatActivity {
 
         Log.d(TAG, "onCreate id:" + id);
 
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("chargeRequests/" + id);
+        if (savedInstanceState == null) {
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference myRef = database.getReference("chargeRequests/" + id);
 
-        myRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                Log.d(TAG, "onChildAdded key:" + dataSnapshot.getKey());
-                Log.d(TAG, "onChildAdded value:" + dataSnapshot.getValue());
+            myRef.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                    Log.d(TAG, "onChildAdded key:" + dataSnapshot.getKey());
+                    Log.d(TAG, "onChildAdded value:" + dataSnapshot.getValue());
 
-                int amount = Integer.parseInt((String) dataSnapshot.getValue()) * 100;
+                    int amount = Integer.parseInt((String) dataSnapshot.getValue()) * 100;
 
-                ChargeRequest request = new ChargeRequest.Builder(amount, USD).autoReturn(3200, TimeUnit.MILLISECONDS).build();
+                    ChargeRequest request = new ChargeRequest.Builder(amount, USD).autoReturn(3200, TimeUnit.MILLISECONDS).build();
 
-                try {
-                    Intent intent = posClient.createChargeIntent(request);
-                    startActivityForResult(intent, CHARGE_REQUEST_CODE);
-                } catch (ActivityNotFoundException e) {
-                    showDialog("Error", "Square Point of Sale is not installed", null);
-                    posClient.openPointOfSalePlayStoreListing();
+                    try {
+                        Intent intent = posClient.createChargeIntent(request);
+                        startActivityForResult(intent, CHARGE_REQUEST_CODE);
+                    } catch (ActivityNotFoundException e) {
+                        showDialog("Error", "Square Point of Sale is not installed", null);
+                        posClient.openPointOfSalePlayStoreListing();
+                    }
+
                 }
 
-            }
+                @Override
+                public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                }
 
-            }
+                @Override
+                public void onChildRemoved(DataSnapshot dataSnapshot) {
 
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                }
 
-            }
+                @Override
+                public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+                }
 
-            }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+                }
+            });
+        }
     }
 
     @Override
